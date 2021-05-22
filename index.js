@@ -1,9 +1,11 @@
 const { Keystone } = require('@keystonejs/keystone');
+
 const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
 const { Text, Checkbox, Password, Relationship, Integer, Float } = require('@keystonejs/fields');
 const { GraphQLApp } = require('@keystonejs/app-graphql');
 const { AdminUIApp } = require('@keystonejs/app-admin-ui');
 const initialiseData = require('./initial-data');
+
 // require('dotenv').config();
 
 const { MongooseAdapter: Adapter } = require('@keystonejs/adapter-mongoose');
@@ -124,9 +126,8 @@ keystone.createList('Volume', {
 
 keystone.createList('Table', {
   fields: {
-    name: { type: Text },
+    name: { type: Text, isUnique: true, isRequired: true },
   },
-  // List-level access controls
   access: {
     auth: true,
   },
@@ -170,8 +171,9 @@ module.exports = {
     new GraphQLApp(),
     new AdminUIApp({
       name: PROJECT_NAME,
-      enableDefaultRoute: true,
       authStrategy,
+      adminPath: '/admin',
+      hooks: require.resolve('./admin/'),
     }),
   ],
 };
